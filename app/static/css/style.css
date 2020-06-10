@@ -53,3 +53,19 @@ table {
     height: 50vh;
     overflow-y: auto;
 }
+
+.mymsj{
+	background-color: greenyellow;
+}
+
+.notmine{
+	background-color: tomato;
+}
+
+.username{
+	margin-right: 10px;
+}
+
+.username::after{
+	content: " ->";
+}

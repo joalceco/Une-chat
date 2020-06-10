@@ -1,61 +1,98 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <!-- <link rel="stylesheet" href="/static/css/style.css"> -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css' ) }}">
-</head>
-<body>
-    <h1>UNE CHAT</h1>
-    <div id="main_chat">
-        <span class="bubble_msj">Mensaje Prueba</span>
-        <span class="bubble_msj">Mensaje Prueba</span>
-        <span class="bubble_msj">Mensaje Prueba</span>
-    </div>
-    <input type="text" name="" id="input_text">
-    <button id="send_button">Enviar!</button>
+{% extends "base.html" %}
 
-    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+{% block css_import %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css' ) }}">
+{% endblock %}
+
+
+{% block content %}
+<h1>UNE CHAT</h1>
+
+<input type="hidden" id="username" value="{{current_user.username}}">
+<input type="hidden" id="user_id" value="{{current_user.id}}">
+
+<div id="room_list">
+    <span class="room" room="General">General</span>
+    <span class="room" room="1">Room 1</span>
+    <span class="room" room="2">Room 2</span>
+    <span class="room" room="3">Room 3</span>
+    <span class="room" room="4">Room 4</span>
+    
+</div>
+
+<div id="main_chat">
+    <span class="bubble_msj">Mensaje Prueba</span>
+    <span class="bubble_msj">Mensaje Prueba</span>
+    <span class="bubble_msj">Mensaje Prueba</span>
+</div>
+<input type="text" name="" id="input_text">
+<button id="send_button">Enviar!</button>
+
+<script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
 <script type="text/javascript" charset="utf-8">
-    var socket = io();
+var socket = io();
 
-    socket.on('connect', function() {
-        socket.emit('carro', {data: 'Me conecte', value:5});
-    });
+socket.on('connect', function() {
+    socket.emit('carro', {data: 'Me conecte', value:5});
+});
 
-    socket.on("respuesta", (response)=>{
-        alert(response)
-    });
+socket.on("respuesta", (response)=>{
+    alert(response)
+});
 
-    let button = document.querySelector("#send_button");
-    let input = document.querySelector("#input_text");
+let button = document.querySelector("#send_button");
+let input = document.querySelector("#input_text");
 
-    function enviar(){
-        socket.emit('message', {data: input.value});
-        input.value = "";
+function enviar(){
+    socket.emit('message', {data: input.value});
+    input.value = "";
+}
+
+button.addEventListener("click",()=>{
+    enviar();
+});
+
+input.addEventListener("keyup", function(event) {
+    if (event.key === "Enter") {
+        enviar()
     }
+});
 
-    button.addEventListener("click",()=>{
-        enviar();
+let chat = document.querySelector("#main_chat");
+
+socket.on("confirmation", (response)=>{
+    msj = document.createElement("div");
+    if (response["user_id"] === parseInt(document.querySelector("#user_id").value)){
+        msj.classList.add("mymsj");
+    }else{
+        msj.classList.add("notmine");
+    }
+    msj.innerHTML= "<span class='username'>"+response["username"]+"</span>"+response["data"];
+    chat.appendChild(msj)
+});
+
+socket.on("joined", (response)=>{
+    msj = document.createElement("div");
+    msj.innerHTML= response
+    chat.appendChild(msj)
+});
+
+socket.on("leaved", (response)=>{
+    msj = document.createElement("div");
+    msj.innerHTML= response
+    chat.appendChild(msj)
+});
+
+let room_list = document.querySelectorAll(".room");
+for(let room of room_list){
+    room.addEventListener("click",(e)=>{ 
+        let room_id = room.getAttribute("room");
+        let username = document.querySelector("#username").value;
+        let user_id = document.querySelector("#user_id").value;
+        socket.emit("join", {room:room_id, username:username, user_id:user_id})
     });
-
-    input.addEventListener("keyup", function(event) {
-        if (event.key === "Enter") {
-            enviar()
-        }
-    });
-
-    let chat = document.querySelector("#main_chat");
-    socket.on("confirmation", (response)=>{
-        msj = document.createElement("div");
-        msj.innerHTML= response
-        chat.appendChild(msj)
-    });
-
+}
 
 
 </script>
-</body>
-</html>
+{% endblock %}
