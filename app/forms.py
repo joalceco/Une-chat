@@ -11,3 +11,7 @@ class SignUpForm(FlaskForm):
     username = StringField("Username", validators=[DataRequired()])
     password = PasswordField("Password", validators=[DataRequired()])
     submit = SubmitField("Sign Up")
+
+class NewRoomForm(FlaskForm):
+    roomname = StringField("Nombre del Grupo", validators=[DataRequired()])
+    submit = SubmitField("Nuevo Grupo")

@@ -11,13 +11,17 @@
 <input type="hidden" id="username" value="{{current_user.username}}">
 <input type="hidden" id="user_id" value="{{current_user.id}}">
 
+<div id="group_admin_list">
+    {% for room in rooms_admin%}
+    <a href="group_admin/{{room.id}}/" roomname="{{room.roomname}}">{{room.roomname}}</a>
+    {% endfor %}
+</div>
+
 <div id="room_list">
     <span class="room" room="General">General</span>
-    <span class="room" room="1">Room 1</span>
-    <span class="room" room="2">Room 2</span>
-    <span class="room" room="3">Room 3</span>
-    <span class="room" room="4">Room 4</span>
-    
+    {% for room in rooms%}
+        <span class="room" room="{{room.id}}" roomname="{{room.roomname}}">{{room.roomname}}</span>
+    {% endfor %}
 </div>
 
 <div id="main_chat">

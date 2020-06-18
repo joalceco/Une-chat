@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>{{ room.roomname}}</h1>
+
+    <ul>
+    {% for user in users %}
+        <li> {{user.username}}  <a href="/group_admin/{{room.id}}/user/{{user.username}}/delete/">delete</a></li>
+    {% endfor%}
+    </ul>
+
+{% endblock %}

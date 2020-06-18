@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Nuevo Grupo</h1>
+
+    <form action="" method="post">
+        {{ form.hidden_tag() }}
+        <p>
+            {{ form.roomname.label }}
+            {{ form.roomname(size=32) }}
+            {% for error in form.roomname.errors %}
+            <span>{{ error }}</span>
+            {% endfor %}
+
+        </p>
+        <p>
+            {{form.submit()}}
+        </p>
+        
+    </form>
+{% endblock %}
